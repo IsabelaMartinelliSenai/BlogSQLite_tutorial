@@ -1,23 +1,30 @@
-const express = require("express");
-//importa a classe da biblioteca "express"
+const express = require("express"); //importa lib express
+const sqlite3 = require("sqlite3"); //importa lib sqlite3
 
 const PORT = 3000; //porta TCP do servidor HTTP da aplicação
 
-const app = express();
-//cria uma instância da classe da biblioteca "express"
+const app = express(); //instância p/ uso do express
 
-const index = "<a href='/sobre'>Sobre</a> <a href='/info'>Info</a>";
+const db = new sqlite3.Database("user.db"); //instância p/ uso do sqlite3, e usa o arquivo 'user.db
+db.serialize(() => {
+  //esse mátodo permite enviar comandos SQL em modo 'sequencial'
+  db.run(
+    "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT , password TEXT)"
+  );
+});
 
-const sobre = 'Você está na página "Sobre" <br> <a href="/">Voltar</a>';
+const home =
+  "<a href='/sobre'>Sobre</a> <br> <a href='/login'>Login</a> <br> <a href='/cadastro'>Cadastro</a>";
+const sobre = 'Você está na página "Sobre" <br> <a href="/">Home</a>';
+const login = 'Você está na página "Login" <br> <a href="/">Home</a>';
+const cadastro = 'Você está na página "Cadastro" <br> <a href="/">Home</a>';
 
-const info = 'Você está na página "Info" <br> <a href="/">Voltar</a>';
 /*Método expres.get necessita de dois parâmetros
 Na ARROW FUNCTION, o primeiro são os dados do servidor (REQUISITION - 'req')
-o segundo, são os dados que serão enviados ao cliente (RESULT - 'res)
-*/
+o segundo, são os dados que serão enviados ao cliente (RESULT - 'res)*/
 app.get("/", (req, res) => {
   //rota raiz do servidor, acesse o browser com o endereço http://localhost:3000/
-  res.send(index);
+  res.send(home);
 });
 
 app.get("/sobre", (req, res) => {
@@ -25,9 +32,13 @@ app.get("/sobre", (req, res) => {
   res.send(sobre);
 });
 
-app.get("/info", (req, res) => {
-  //rota raiz do servidor, acesse o browser com o endereço http://localhost:3000/info
-  res.send(info);
+app.get("/login", (req, res) => {
+  //rota raiz do servidor, acesse o browser com o endereço http://localhost:3000/login
+  res.send(login);
+});
+
+app.get("/cadastro", (req, res) => {
+  res.send(cadastro);
 });
 
 //app.listen() deve ser o último comando da aplicação
